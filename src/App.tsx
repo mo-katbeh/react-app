@@ -2,6 +2,7 @@ import { useState } from "react";
 import Alert from "./components/Alert";
 import Button from "./components/Button";
 import ListGroup from "./components/ListGroup";
+import Like from "./components/icons/Like";
 
 function App() {
   const items = ["Paris", "London", "Makeh", "Iraq"];
@@ -56,4 +57,13 @@ function App3() {
   );
 }
 
-export default App3;
+function LikeApp() {
+  const [likeActive, setLikeDisActive] = useState(false);
+  return (
+    <div>
+      <Like onClick={() => console.log("Clicked")}></Like>
+    </div>
+  );
+}
+
+export default LikeApp;
