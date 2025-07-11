@@ -3,6 +3,11 @@ import Alert from "./components/Alert";
 import Button from "./components/Button";
 import ListGroup from "./components/ListGroup";
 import Like from "./components/icons/Like";
+import { produce } from "immer";
+import NavBar from "./components/NavBar";
+import Cart from "./components/Cart";
+import ExpandableText from "./components/ExpandableText";
+import Form from "./components/Form";
 
 function App() {
   const items = ["Paris", "London", "Makeh", "Iraq"];
@@ -106,14 +111,94 @@ function TestApp() {
     // update
     setTags(tags.map((tag) => (tag === "happy" ? "exciting" : tag)));
     // update array of objects
-    setBugs(bugs.map((bug) => (bug.id === 1 ? { ...bug, fixed: true } : bug)));
+    // setBugs(bugs.map((bug) => (bug.id === 1 ? { ...bug, fixed: true } : bug)));
+    //immer
+    setBugs(
+      produce((draft) => {
+        const bug = draft.find((bug) => bug.id === 1);
+        if (bug) bug.fixed = true;
+      })
+    );
   };
   return (
     <div>
+      {bugs.map((bug) => (
+        <p key={bug.id}>
+          {" "}
+          {bug.title} {bug.fixed ? "Fixed" : "New"}{" "}
+        </p>
+      ))}
+
       {/* {drink.price} */}
       <button onClick={handleClick}>Click</button>
     </div>
   );
 }
 
-export default TestApp;
+function App4() {
+  const [cartItem, setCartItem] = useState(["product1", "product2"]);
+  return (
+    <div>
+      <NavBar countCartItem={cartItem.length}></NavBar>
+      <Cart cartItem={cartItem} onClear={() => setCartItem([])}></Cart>
+    </div>
+  );
+}
+function ExerciseApp() {
+  const [pizza, setPizza] = useState({
+    name: "spicy",
+    topping: ["mashrom"],
+  });
+  const handleClick = () => {
+    setPizza({
+      ...pizza,
+      topping: [...pizza.topping, "peef"],
+    });
+  };
+  const [cart, setCart] = useState({
+    dicount: 0.1,
+    items: [
+      { id: 1, title: "p1", quantity: 1 },
+      { id: 2, title: "p2", quantity: 1 },
+    ],
+  });
+  const handleClick1 = () => {
+    setCart({
+      ...cart,
+      items: {
+        ...cart.items.map((item) =>
+          item.id === 1 ? { ...item, quantity: 2 } : item
+        ),
+      },
+    });
+  };
+  return (
+    <div>
+      {game.player.name}
+      <button onClick={handleClick}>change name</button>
+    </div>
+  );
+}
+function App5() {
+  return (
+    <div>
+      {" "}
+      <ExpandableText>
+        A navigation bar is a key part of any website or app. It helps users
+        move easily between different sections, such as Home, About, Services,
+        and Contact. Usually found at the top or side of the screen, the navbar
+        can include links, buttons, a logo, and dropdown menus. On mobile
+        devices, it often turns into a compact menu icon. A well-designed
+        navigation bar improves user experience by making information easy to
+        find. Developers often use HTML, CSS, and JavaScript or frameworks like
+        React to build it. In mobile apps, libraries like React Navigation help
+        create smooth and responsive navigation bars.
+      </ExpandableText>{" "}
+    </div>
+  );
+}
+function App6() {
+  return <Form />;
+}
+
+export default App6;
