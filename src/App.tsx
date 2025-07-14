@@ -295,6 +295,7 @@ function App8() {
     <>
       {error && <p className="text-danger">{error}</p>}
       {loading && <div className="spinner-border"></div>}
+      <button className="btn btn-primary mb-3">Add</button>
       <ul className="list-group">
         {users.map((user) => (
           <li
