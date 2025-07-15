@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 // import Alert from "./components/Alert";
 // import Button from "./components/Button";
 // import ListGroup from "./components/ListGroup";
@@ -15,8 +14,8 @@ import { useEffect, useState } from "react";
 // import categories from "./expense-tracker/categories";
 // import ProductList from "./ProductList";
 // import { original } from "immer";
-import { CanceledError } from "./services/api-client";
 import userService, { User } from "./services/user-service";
+import useUsers from "./hooks/useUsers";
 
 // function App() {
 //   const items = ["Paris", "London", "Makeh", "Iraq"];
@@ -256,26 +255,7 @@ import userService, { User } from "./services/user-service";
 //   );
 // }
 function App8() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    setLoading(true);
-    const { request, cancel } = userService.getAll<User>();
-    request
-      .then((res) => {
-        setUsers(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        if (err instanceof CanceledError) return;
-        setError(err.message);
-        setLoading(false);
-      });
-    // .finally(() => setLoading(false)); //it's work just in production mode
-    return () => cancel();
-  }, []);
+  const { users, error, loading, setUsers, setError } = useUsers();
   const deleteUser = (user: User) => {
     const originalState = [...users];
     setUsers(users.filter((u) => u.id !== user.id));
