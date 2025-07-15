@@ -14,7 +14,9 @@ import { useEffect, useState } from "react";
 // import ExpenseForm from "./expense-tracker/components/ExpenseForm";
 // import categories from "./expense-tracker/categories";
 // import ProductList from "./ProductList";
-import axios, { CanceledError } from "axios";
+// import { original } from "immer";
+import { CanceledError } from "./services/api-client";
+import userService, { User } from "./services/user-service";
 
 // function App() {
 //   const items = ["Paris", "London", "Makeh", "Iraq"];
@@ -257,18 +259,11 @@ function App8() {
   const [users, setUsers] = useState<User[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  interface User {
-    id: number;
-    name: string;
-  }
-  useEffect(() => {
-    const controller = new AbortController();
 
+  useEffect(() => {
     setLoading(true);
-    axios
-      .get<User[]>("https://jsonplaceholder.typicode.com/users", {
-        signal: controller.signal,
-      })
+    const { request, cancel } = userService.getAll<User>();
+    request
       .then((res) => {
         setUsers(res.data);
         setLoading(false);
@@ -279,36 +274,66 @@ function App8() {
         setLoading(false);
       });
     // .finally(() => setLoading(false)); //it's work just in production mode
-    return () => controller.abort();
+    return () => cancel();
   }, []);
   const deleteUser = (user: User) => {
     const originalState = [...users];
     setUsers(users.filter((u) => u.id !== user.id));
-    axios
-      .delete("https://jsonplaceholder.typicode.com/users/" + user.id)
+    userService.delete(user.id).catch((err) => {
+      setError(err.message);
+      setUsers(originalState);
+    });
+  };
+  const addUser = () => {
+    const original = [...users];
+    const newUser = { id: 1, name: "moh" };
+    setUsers([newUser, ...users]);
+
+    userService
+      .create(newUser)
+      .then(({ data: savedUser }) => setUsers([savedUser, ...users]))
       .catch((err) => {
         setError(err.message);
-        setUsers(originalState);
+        setUsers(original);
       });
+  };
+  const updateUser = (user: User) => {
+    const original = [...users];
+    const updatedUser = { ...user, name: user.name + "!" };
+    setUsers(users.map((u) => (u.id === user.id ? updatedUser : u)));
+    userService.update(updatedUser).catch((err) => {
+      setError(err.message);
+      setUsers(original);
+    });
   };
   return (
     <>
       {error && <p className="text-danger">{error}</p>}
       {loading && <div className="spinner-border"></div>}
-      <button className="btn btn-primary mb-3">Add</button>
+      <button className="btn btn-primary mb-3" onClick={addUser}>
+        Add
+      </button>
       <ul className="list-group">
         {users.map((user) => (
           <li
             key={user.id}
             className="list-group-item d-flex justify-content-between"
           >
-            {user.name}{" "}
-            <button
-              className="btn btn-outline-danger"
-              onClick={() => deleteUser(user)}
-            >
-              Delete
-            </button>{" "}
+            {user.name}
+            <div>
+              <button
+                className="btn btn-outline-secondary mx-1"
+                onClick={() => updateUser(user)}
+              >
+                Update
+              </button>
+              <button
+                className="btn btn-outline-danger"
+                onClick={() => deleteUser(user)}
+              >
+                Delete
+              </button>
+            </div>
           </li>
         ))}
       </ul>
