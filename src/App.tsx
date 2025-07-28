@@ -143,15 +143,15 @@ import useUsers from "./hooks/useUsers";
 //   );
 // }
 
-// function App4() {
-//   const [cartItem, setCartItem] = useState(["product1", "product2"]);
-//   return (
-//     <div>
-//       <NavBar countCartItem={cartItem.length}></NavBar>
-//       <Cart cartItem={cartItem} onClear={() => setCartItem([])}></Cart>
-//     </div>
-//   );
-// }
+function App4() {
+  const [cartItem, setCartItem] = useState(["product1", "product2"]);
+  return (
+    <div>
+      <NavBar countCartItem={cartItem.length}></NavBar>
+      <Cart cartItem={cartItem} onClear={() => setCartItem([])}></Cart>
+    </div>
+  );
+}
 // function ExerciseApp() {
 //   const [pizza, setPizza] = useState({
 //     name: "spicy",
@@ -267,6 +267,7 @@ function App8() {
   const addUser = () => {
     const original = [...users];
     const newUser = { id: 1, name: "moh" };
+
     setUsers([newUser, ...users]);
 
     userService
